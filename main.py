@@ -2,18 +2,31 @@ import streamlit as st
 import openai
 import base64
 import os
-from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load .env file if present (for local development)
+load_dotenv()
 
 def main():
-    st.title("DALL·E 3 Image Generator")
+    st.title("🖼️ DALL·E 3 Image Generator")
 
-    # api_key = st.text_input("Enter your OpenAI API key:", type="password")
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    # Get the OpenAI API key from environment
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # Prompt input
     prompt = st.text_area("Enter your image prompt:")
 
-    if st.button("Generate Image") and api_key and prompt:
+    if st.button("Generate Image"):
+        if not api_key:
+            st.error("❌ OpenAI API key not found. Please set OPENAI_API_KEY as an environment variable.")
+            return
+        if not prompt:
+            st.warning("⚠️ Please enter a prompt.")
+            return
+
         client = openai.OpenAI(api_key=api_key)
-        with st.spinner("Generating image..."):
+
+        with st.spinner("🎨 Generating image..."):
             try:
                 result = client.images.generate(
                     model="gpt-image-1",
